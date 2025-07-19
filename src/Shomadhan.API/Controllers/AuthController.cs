@@ -1,14 +1,22 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Shomadhan.API.Models;
-using Shomadhan.Infrastructure.Identity;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+
+using Shomadhan.API.Models;
+using Shomadhan.Infrastructure.Identity;
+
+using Swashbuckle.AspNetCore.Annotations;
+
+
 namespace Shomadhan.API.Controllers;
 
+[Route("api/[controller]")]
+[ApiController]
 public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -43,6 +51,15 @@ public class AuthController : ControllerBase
     //}
 
     [HttpPost("login")]
+    [ValidateAntiForgeryToken]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [AllowAnonymous]
+    [SwaggerOperation(Summary = "User Login", Description = "Authenticate user and return JWT token.")]
+    [SwaggerResponse(StatusCodes.Status200OK, "User authenticated successfully and JWT token returned.")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Invalid credentials provided.")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Bad request, invalid input data.")]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
