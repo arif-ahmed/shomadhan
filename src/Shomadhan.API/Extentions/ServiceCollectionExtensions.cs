@@ -43,6 +43,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
         services.AddScoped<IShopRepository, ShopRepository>();
         services.AddScoped<IRoleRepository, IdentityRoleRepository>();
+        services.AddScoped<IUserRepository, IdentityUserRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         return services;
     }

@@ -1,12 +1,19 @@
 ﻿using MediatR;
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+using Shomadhan.API.Models;
 using Shomadhan.Application.Commands.Shops;
 using Shomadhan.Application.Queries;
+
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Shomadhan.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class ShopsController : ControllerBase
 {
     private readonly ILogger<ShopsController> _logger;
@@ -17,54 +24,90 @@ public class ShopsController : ControllerBase
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetShopsAsync([FromQuery] string? searchText, int offset = 1, int pageSize = 100)
-    {
-        var shops = await _mediator.Send(new GetShopsQuery { SearchText = searchText, Offset = offset, PageSize = pageSize });
-        return Ok(new { Data = shops.Item1, TotalCount = shops.Item2 });
-    }
-
-    [HttpPost("Request")]
-    public async Task<IActionResult> RequestShopRegistration(CreateShopCommand command)
-    {
-        await _mediator.Send(command);
-        return Ok(new { Message = "Shop created successfully" });
-    }
-
-    [HttpPatch("{shopId}/approval")]
-    public async Task<IActionResult> ChangeShopApprovalStatus(string shopId, [FromBody] bool isApproved)
-    {
-        await _mediator.Send(new ApproveShopCommand { ShopId = shopId, IsApproved = isApproved });
-        var message = isApproved ? "approved" : "rejected";
-        return Ok(new { Message = $"Shop with ID {shopId} {message} successfully" });
-    }
-
     [HttpGet("{shopId}")]
+    [SwaggerOperation(Summary = "Get shop by ID", Description = "Retrieves the details of a shop using its unique identifier.")]
+    [SwaggerResponse(200, "Shop details retrieved successfully", typeof(object))]
+    [SwaggerResponse(404, "Shop not found")]
+    [SwaggerResponse(500, "Internal server error")]
+    [ProducesResponseType(typeof(object), 200)]
+    [ProducesResponseType(404)]
+    [ProducesResponseType(500)]
+    // <summary>
+    /// Gets the details of a shop by its ID.
+    // </summary>
     public async Task<IActionResult> GetShopByIdAsync(string shopId)
     {
         // Placeholder for getting a shop by ID
         await Task.Delay(1000); // Simulate async operation
-        return Ok(new { Message = $"Details of shop with ID {shopId}" });
+        return Ok(new
+        {
+            Message = $"Details of shop with ID {shopId}"
+        });
     }
 
-    [HttpGet("search")]
-    public async Task<IActionResult> SearchShopsAsync([FromQuery] string query)
+    [HttpGet]
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Any, NoStore = false)]
+    [SwaggerOperation(Summary = "Get all shops", Description = "Retrieves a paginated list of all shops, optionally filtered by search text.")]
+    [SwaggerResponse(200, "List of shops retrieved successfully", typeof(object))]
+    [SwaggerResponse(400, "Bad request", typeof(string))]
+    [SwaggerResponse(500, "Internal server error")]
+    public async Task<IActionResult> GetShopsAsync([FromQuery] string? searchText, int pageNumber = 1, int pageSize = 100)
     {
-        // Placeholder for searching shops
-        await Task.Delay(1000); // Simulate async operation
-        return Ok(new { Message = $"Search results for query: {query}" });
+        var shops = await _mediator.Send(new GetShopsQuery { SearchText = searchText, PageNumber = pageNumber, PageSize = pageSize });
+        return Ok(new { Data = shops.Item1, TotalCount = shops.Item2 });
     }
 
-    [HttpGet("categories")]
-    public async Task<IActionResult> GetShopCategoriesAsync()
+    [HttpPost]
+    [SwaggerOperation(Summary = "Create a new shop", Description = "Creates a new shop with the provided details.")]
+    [SwaggerResponse(201, "Shop created successfully", typeof(CreateShopResponse))]
+    [SwaggerResponse(400, "Bad request", typeof(string))]
+    [SwaggerResponse(500, "Internal server error")]
+    [ProducesResponseType(typeof(CreateShopResponse), 201)]
+    [ProducesResponseType(typeof(string), 400)]
+    [ProducesResponseType(500)]
+    /// <summary>
+    /// Creates a new shop.
+    /// </summary> 
+    public async Task<IActionResult> Post([FromBody] CreateShopCommand command)
     {
-        // Placeholder for getting shop categories
-        await Task.Delay(1000); // Simulate async operation
-        return Ok(new { Message = "List of shop categories" });
+        _logger.LogInformation("Creating a new shop with command: {@Command}", command);
+
+        var newShopId = await _mediator.Send(command);
+
+        if (string.IsNullOrEmpty(newShopId))
+        {
+            _logger.LogError("Failed to create shop. Command: {@Command}", command);
+            return BadRequest("Failed to create shop.");
+        }
+
+        _logger.LogInformation("Shop created successfully with ID: {ShopId}", newShopId);
+
+        // Build absolute URI
+        var location = Url.Action(nameof(GetShopByIdAsync),
+                                  controller: "Shops",
+                                  values: new
+                                  {
+                                      shopId = newShopId
+                                  },
+                                  protocol: Request.Scheme);
+
+        return Created(location, new CreateShopResponse
+        {
+            Message = "Shop created successfully",
+            ShopId = newShopId
+        });
+
+        //return CreatedAtRoute(
+        //    nameof(GetShopByIdAsync),
+        //    new
+        //    {
+        //        shopId = newShopId
+        //    }
+        //);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateShop(string id, [FromBody] UpdateShopCommand command)
+    public async Task<IActionResult> Put(string id, [FromBody] UpdateShopCommand command)
     {
         _logger.LogInformation("Updating shop with ID: {ShopId}", id);
 
@@ -81,7 +124,46 @@ public class ShopsController : ControllerBase
         }
 
         await _mediator.Send(command);
-        
-        return Ok(new { Message = $"Shop with ID {id} updated successfully" });
+
+        return Ok(new
+        {
+            Message = $"Shop with ID {id} updated successfully"
+        });
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteShop(string id)
+    {
+        _logger.LogInformation("Deleting shop with ID: {ShopId}", id);
+        if (string.IsNullOrEmpty(id))
+        {
+            _logger.LogError("Shop ID is null or empty.");
+            return BadRequest("Shop ID cannot be null or empty.");
+        }
+        await _mediator.Send(new DeleteShopCommand { Id = id });
+
+        _logger.LogInformation("Shop with ID: {ShopId} deleted successfully", id);
+
+        return Ok(new
+        {
+            Message = $"Shop with ID {id} deleted successfully"
+        });
+    }
+
+    [HttpGet("users")]
+    public async Task<IActionResult> GetShopUsers()
+    {
+        _logger.LogInformation("Retrieving users for the shop");
+
+        var shopId = User.FindFirst("ShopId")?.Value;
+
+        var shopUsers = await _mediator.Send(new GetShopUsersQuery { ShopId = shopId });
+
+        _logger.LogInformation("Retrieving users for the shop");
+
+        _logger.LogInformation("Users retrieved successfully");
+
+        return Ok(shopUsers);
+
     }
 }

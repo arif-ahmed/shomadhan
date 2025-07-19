@@ -1,4 +1,6 @@
-﻿namespace Shomadhan.API.Middlewares;
+﻿using System.Security.Claims;
+
+namespace Shomadhan.API.Middlewares;
 
 public class TenantResolutionMiddleware
 {
@@ -16,6 +18,15 @@ public class TenantResolutionMiddleware
 
         // Store tenant info for the rest of the request, e.g. in Items
         context.Items["Tenant"] = tenant;
+
+
+        var user = context.User; // ClaimsPrincipal
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            var shopId = user.FindFirst("ShopId")?.Value;
+            var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // ...any other claim you wish
+        }
 
         await _next(context);
     }

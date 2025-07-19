@@ -9,6 +9,11 @@ public static class UserMappingExtensions
     {
         return new User
         {
+            Id = appUser.Id,
+            UserName = appUser?.UserName ?? string.Empty,
+            Email = appUser?.Email ?? string.Empty,
+            ShopId = appUser?.ShopId ?? string.Empty
+            // Map other properties as needed
 
         };
     }

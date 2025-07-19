@@ -1,13 +1,16 @@
 ﻿using MediatR;
+
 using Microsoft.Extensions.Logging;
+
 using Shomadhan.Application.Dtos;
+using Shomadhan.Domain.Core.Identity;
 using Shomadhan.Domain.Interfaces;
 
 namespace Shomadhan.Application.Queries;
 public class GetShopsQuery : IRequest<(IEnumerable<ShopDto>, int)>
 {
     public string? SearchText { get; set; }
-    public int Offset { get; set; } = 1;
+    public int PageNumber { get; set; } = 1;
     public int PageSize { get; set; } = 100;
 }
 
@@ -25,9 +28,14 @@ public class GetShopsQueryHandler : IRequestHandler<GetShopsQuery, (IEnumerable<
     {
         _logger.LogInformation("Handling GetShopsQuery with SearchText: {SearchText}", request.SearchText);
 
-        var shopData = await _shopRepository.FindAsync(
-            s => string.IsNullOrEmpty(request.SearchText) || s.Name.Contains(request.SearchText, StringComparison.OrdinalIgnoreCase),
-            request.Offset, request.PageSize, cancellationToken);
+        var shopData = await _shopRepository.FindAsync(cancellationToken: cancellationToken);
+
+        // Define the query logic using LINQ
+        //Func<IQueryable<User>, IQueryable<User>> query = users =>
+        //    users.Where(u => u.EmailConfirmed)
+        //         .OrderBy(u => u.CreatedAt);
+
+        // await _shopRepository.GetAsync((shops => shops.Where(s => string.IsNullOrEmpty(request.SearchText) || s.Name.Contains(request.SearchText, StringComparison.OrdinalIgnoreCase))) ,cancellationToken: cancellationToken);
 
         var shopDtos = shopData.Item1.Select(s => new ShopDto
         {
