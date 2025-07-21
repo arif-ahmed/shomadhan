@@ -21,6 +21,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     // Expose repositories as properties
     public IShopRepository ShopRepository => GetRepository<IShopRepository, ShopRepository>();
     public IRoleRepository RoleRepository => GetRepository<IRoleRepository, IdentityRoleRepository>();
+    public IUserRepository UserRepository => GetRepository<IUserRepository, IdentityUserRepository>();
     public IProductCategoryRepository ProductCategoryRepository => GetRepository<IProductCategoryRepository, ProductCategoryRepository>();
 
 

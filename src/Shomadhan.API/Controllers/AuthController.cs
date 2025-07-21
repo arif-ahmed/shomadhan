@@ -51,28 +51,21 @@ public class AuthController : ControllerBase
     //}
 
     [HttpPost("login")]
-    [ValidateAntiForgeryToken]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
     [SwaggerOperation(Summary = "User Login", Description = "Authenticate user and return JWT token.")]
-    [SwaggerResponse(StatusCodes.Status200OK, "User authenticated successfully and JWT token returned.")]
-    [SwaggerResponse(StatusCodes.Status401Unauthorized, "Invalid credentials provided.")]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "Bad request, invalid input data.")]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
-
         if (user == null)
             return Unauthorized();
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-
         if (!result.Succeeded)
             return Unauthorized();
 
-        // Build JWT token
         var roles = await _userManager.GetRolesAsync(user);
 
         var claims = new List<Claim>
@@ -81,7 +74,7 @@ public class AuthController : ControllerBase
             new Claim("ShopId", user.ShopId ?? Guid.Empty.ToString())
         };
 
-        if(!string.IsNullOrEmpty(user.Email))
+        if (!string.IsNullOrEmpty(user.Email))
             claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
 
         if (!string.IsNullOrEmpty(user.UserName))
@@ -89,16 +82,24 @@ public class AuthController : ControllerBase
 
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtKey"] ?? "THIS_IS_A_SUPER_SECRET_KEY_1234567890"));
+        var keyString = _config["Jwt:Key"] ?? "gE29u1kJqv1r09ZlXQ45aB67pL8zR5Nd"; // Fixed path here
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyString));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
+            // Optionally add issuer and audience here if you validate them
             claims: claims,
-            expires: DateTime.Now.AddHours(2),
+            expires: DateTime.UtcNow.AddHours(2),
             signingCredentials: creds
         );
 
-        return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+        return Ok(new
+        {
+            token = new JwtSecurityTokenHandler().WriteToken(token),
+            token_type = "Bearer",
+            expires_in = 7200 // 2 hours in seconds
+        });
     }
+
 
 }

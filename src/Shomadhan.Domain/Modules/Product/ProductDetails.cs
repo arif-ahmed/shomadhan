@@ -1,6 +1,8 @@
+﻿using Shomadhan.Domain.Core.MultiTenancy;
+
 namespace Shomadhan.Domain.Modules.Product;
 
-public class ProductDetails : EntityBase
+public class ProductDetails : EntityBase, IMayHaveTenant
 {
     public string Name { get; set; } = default!;
     public string? Description { get; set; }
@@ -8,4 +10,6 @@ public class ProductDetails : EntityBase
     public int StockQuantity { get; set; }
     public string? ProductCategoryId { get; set; }
     public ProductCategory? ProductCategory { get; set; }
+    public string? ShopId { get; set; }
+    public virtual Shop? Shop { get; set; }
 }

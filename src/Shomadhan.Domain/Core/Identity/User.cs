@@ -1,4 +1,4 @@
-using Shomadhan.Domain.Core.MultiTenancy;
+﻿using Shomadhan.Domain.Core.MultiTenancy;
 
 namespace Shomadhan.Domain.Core.Identity;
 
@@ -12,10 +12,10 @@ public class User : EntityBase, IMayHaveTenant
     public string? PhoneNumber { get; set; }
     public bool IsActive { get; set; }
     public int RoleId { get; set; }
+    public string? ShopId { get; set; }
 
     #region Navigation Properties
     public Role Role { get; set; } = default!;
-    public string? ShopId { get; set; }
     public virtual Shop? Shop { get; set; }
     #endregion
 }

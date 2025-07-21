@@ -2,6 +2,7 @@
 using Shomadhan.Domain;
 using Shomadhan.Domain.Interfaces;
 using Shomadhan.Infrastructure.Data;
+
 using System.Linq.Expressions;
 
 namespace Shomadhan.Infrastructure.Repositories;
@@ -107,12 +108,57 @@ public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntit
     }
     public virtual async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, string sortBy, string sortOrder, int offset = 0, int pageSize = 100, CancellationToken cancellationToken = default)
     {
-        await Task.Delay(1000, cancellationToken); // Simulate async operation
-        throw new NotImplementedException();
-    }
-    public virtual async Task<(IEnumerable<TEntity>, int)> FindAsync(Expression<Func<TEntity, bool>> predicate, int offset, int page, CancellationToken cancellationToken = default)
-    {
+        if (predicate == null)
+        {
+            throw new ArgumentNullException(nameof(predicate), "Predicate cannot be null.");
+        }
+
+        if (string.IsNullOrEmpty(sortBy))
+        {
+            throw new ArgumentNullException(nameof(sortBy), "SortBy cannot be null or empty.");
+        }
+
+        if (string.IsNullOrEmpty(sortOrder))
+        {
+            throw new ArgumentNullException(nameof(sortOrder), "SortOrder cannot be null or empty.");
+        }
+
         _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+        var query = _dbSet.Where(predicate);
+        if (sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.OrderBy(e => EF.Property<object>(e, sortBy));
+        }
+        else if (sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
+        {
+            query = query.OrderByDescending(e => EF.Property<object>(e, sortBy));
+        }
+        else
+        {
+            throw new ArgumentException("SortOrder must be either 'asc' or 'desc'.", nameof(sortOrder));
+        }
+
+        if (offset > 0)
+        {
+            query = query.Skip(offset);
+        }
+
+        if (pageSize > 0)
+        {
+            query = query.Take(pageSize);
+        }
+
+        var entities = await query.ToListAsync(cancellationToken);
+        if (entities == null || !entities.Any())
+        {
+            throw new KeyNotFoundException($"No entities found matching the criteria.");
+        }
+
+        return entities;
+    }
+    public virtual async Task<(IEnumerable<TEntity>, int)> FindAsync(Expression<Func<TEntity, bool>>? predicate = null, int pageNumber = 1, int pageSize = 100, CancellationToken cancellationToken = default)
+    {
 
         if (predicate == null)
         {
@@ -121,24 +167,32 @@ public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntit
 
         var query = _dbSet.Where(predicate);
 
-        //if (!string.IsNullOrEmpty(sortBy))
-        //{
-        //    query = sortOrder.ToLower() == "desc" ?
-        //        query.OrderByDescending(e => EF.Property<object>(e, sortBy)) :
-        //        query.OrderBy(e => EF.Property<object>(e, sortBy));
-        //}
-
         int totalCount = await query.CountAsync();
 
-        if (offset > 0)
+        if (pageNumber > 0)
         {
-            query = query.Skip(offset - 1);
+            query = query.Skip((pageNumber - 1) * pageSize);
         }
-        if (page > 0)
+        if (pageNumber > 0)
         {
-            query = query.Take(page);
+            query = query.Take(pageSize);
         }
 
         return (await query.ToListAsync(cancellationToken), totalCount);
+    }
+
+    public async Task<(IEnumerable<TEntity>, int)> GetAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? query = null, CancellationToken cancellationToken = default)
+    {
+        var queryable = _dbSet.AsQueryable();
+
+        if (query != null)
+        {
+            queryable = query(queryable);
+        }
+
+        var entities = await queryable.ToListAsync(cancellationToken);
+        int count = await queryable.CountAsync(cancellationToken);
+
+        return (entities, count);
     }
 }

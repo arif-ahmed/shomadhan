@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Linq.Expressions;
+
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
 using Shomadhan.Domain.Core.Identity;
 using Shomadhan.Domain.Interfaces;
 using Shomadhan.Infrastructure.Common;
@@ -41,5 +45,46 @@ public class IdentityUserRepository : EntityRepository<User>, IUserRepository
         }
 
         return appUser.ToDomainUser();
+    }
+
+    public async override Task<IEnumerable<User>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        var users = await _userManager.Users
+            .Include(u => u.Shop) 
+            .AsNoTracking()
+            .Select(user => user.ToDomainUser())
+            .ToListAsync(cancellationToken);
+
+        return users;
+    }
+
+    public async override Task<(IEnumerable<User>, int)> FindAsync(Expression<Func<User, bool>>? predicate = null, int pageNumber = 1, int pageSize = 100, CancellationToken cancellationToken = default)
+    {
+        var dbset = _userManager.Users.AsQueryable();
+
+        if (predicate == null)
+        {
+            throw new ArgumentNullException(nameof(predicate), "Predicate cannot be null.");
+        }
+
+        var appUserPredicate = ExpressionConversionHelper.ConvertPredicate<User, ApplicationUser>(predicate);
+
+        var query = dbset.Where(appUserPredicate);
+
+        int totalCount = await query.CountAsync();
+
+        if (pageNumber > 0)
+        {
+            query = query.Skip((pageNumber - 1) * pageSize);
+        }
+        if (pageNumber > 0)
+        {
+            query = query.Take(pageSize);
+        }
+
+        var applicationUsers = await query.ToListAsync(cancellationToken);
+        var users = applicationUsers.Select(user => user.ToDomainUser());
+
+        return (users, totalCount);
     }
 }

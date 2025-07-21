@@ -1,10 +1,26 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using CorrelationId;
+using CorrelationId.DependencyInjection;
+
+using Microsoft.AspNetCore.Identity;
+
+using Serilog;
+
 using Shomadhan.API.Extentions;
 using Shomadhan.API.Seed;
 using Shomadhan.Infrastructure.Data;
 using Shomadhan.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.Seq("http://localhost:5341") // Optional: change for production
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 // --- Service registrations via extensions ---
 builder.Services
@@ -15,6 +31,9 @@ builder.Services
     .AddJwtAuthentication(builder.Configuration)
     .AddApiServices()
     .AddSwaggerDocumentation();
+
+builder.Services.AddDefaultCorrelationId();
+
 
 var app = builder.Build();
 
@@ -29,13 +48,16 @@ using (var scope = app.Services.CreateScope())
 }
 
 // --- Middleware pipeline ---
-app.UseAppMiddlewares();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseAppMiddlewares();
 app.MapControllers();
+
+app.UseResponseCaching();
+app.UseCorrelationId();
 
 app.MapGet("/", async context =>
 {

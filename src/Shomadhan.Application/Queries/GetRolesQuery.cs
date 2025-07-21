@@ -5,6 +5,7 @@ using Shomadhan.Domain.Interfaces;
 namespace Shomadhan.Application.Queries;
 public class GetRolesQuery : IRequest<List<RoleDto>>
 {
+    public string? ShopId { get; set; }
 }
 
 public class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, List<RoleDto>>
@@ -21,8 +22,8 @@ public class GetRolesQueryHandler : IRequestHandler<GetRolesQuery, List<RoleDto>
         {
             Id = role.Id,
             Name = role.Name,
-            Description = role?.Description,
-            ShopId = role?.ShopId
+            Description = role?.Description ?? string.Empty,
+            ShopId = role?.ShopId ?? string.Empty,
         }).ToList();
     }
 }
