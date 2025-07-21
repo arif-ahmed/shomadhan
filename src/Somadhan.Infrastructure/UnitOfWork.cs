@@ -36,15 +36,15 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     }
 
     // For generic repositories
-    private IEntityRepository<T> GetRepository<T>() where T : EntityBase
-    {
-        if (_repositories.TryGetValue(typeof(T), out var repo))
-            return (IEntityRepository<T>)repo;
+    //private IEntityRepository<T> GetRepository<T>() where T : EntityBase
+    //{
+    //    if (_repositories.TryGetValue(typeof(T), out var repo))
+    //        return (IEntityRepository<T>)repo;
 
-        var repository = new EntityRepository<T>(_context);
-        _repositories[typeof(T)] = repository;
-        return repository;
-    }
+    //    var repository = new EntityRepository<T>(_context);
+    //    _repositories[typeof(T)] = repository;
+    //    return repository;
+    //}
 
     // For custom repositories (e.g., ICustomerRepository)
     private TRepo GetRepository<TRepo, TImpl>()
@@ -58,6 +58,18 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         // Create instance (could use DI/Activator)
         // var repository = (TRepo)Activator.CreateInstance(typeof(TImpl), _context)!;
         var repository = (TRepo)_serviceProvider.GetRequiredService<TRepo>();
+        _repositories[type] = repository;
+        return repository;
+    }
+
+    public IEntityRepository<TEntity> GetRepository<TEntity>() where TEntity : EntityBase
+    {
+        var type = typeof(TEntity);
+
+        if (_repositories.TryGetValue(type, out var repo))
+            return (IEntityRepository<TEntity>)repo;
+
+        var repository = _serviceProvider.GetRequiredService<IEntityRepository<TEntity>>();
         _repositories[type] = repository;
         return repository;
     }

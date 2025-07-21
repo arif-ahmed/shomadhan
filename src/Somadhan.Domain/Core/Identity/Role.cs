@@ -1,10 +1,10 @@
-using Somadhan.Domain.Core.MultiTenancy;
+﻿using Somadhan.Domain.Core.MultiTenancy;
 
 namespace Somadhan.Domain.Core.Identity;
 
 public class Role : EntityBase, IMayHaveTenant
 {
-    public string Name { get; set; } = default!;
+    public string? Name { get; set; } = default!;
     public string? Description { get; set; }
     public string? ShopId { get; set; }
 
