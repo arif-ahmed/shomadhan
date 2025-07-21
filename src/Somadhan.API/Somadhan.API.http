@@ -1,0 +1,6 @@
+@Somadhan.API_HostAddress = http://localhost:5115
+
+GET {{Somadhan.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

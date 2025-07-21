@@ -1,6 +1,0 @@
-@Shomadhan.API_HostAddress = http://localhost:5115
-
-GET {{Shomadhan.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
