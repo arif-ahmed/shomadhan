@@ -29,6 +29,24 @@ public static class DataSeeder
 
         var shopsDict = db.Shops.ToDictionary(s => s.Name, s => s);
 
+        // Seed Brands
+        if (!db.Brands.Any())
+        {
+            var brands = new List<Brand>
+            {
+                new Brand { Id = Guid.NewGuid().ToString(), Name = "Local Brand", Description = "Locally sourced products", ShopId = shopsDict["Abdullah Traders"].Id },
+                new Brand { Id = Guid.NewGuid().ToString(), Name = "Organic Harvest", Description = "Organic food products", ShopId = shopsDict["Abdullah Traders"].Id },
+                new Brand { Id = Guid.NewGuid().ToString(), Name = "International Books", Description = "Books from international publishers", ShopId = shopsDict["Wafilife"].Id },
+                new Brand { Id = Guid.NewGuid().ToString(), Name = "Artistic Stationery", Description = "Creative and unique stationery items", ShopId = shopsDict["Wafilife"].Id },
+                new Brand { Id = Guid.NewGuid().ToString(), Name = "Premium Fragrance", Description = "High-end fragrance brand", ShopId = shopsDict["Atik Fragnance"].Id },
+                new Brand { Id = Guid.NewGuid().ToString(), Name = "Exotic Scents", Description = "Rare and unique fragrances", ShopId = shopsDict["Atik Fragnance"].Id }
+            };
+            db.Brands.AddRange(brands);
+            await db.SaveChangesAsync();
+        }
+
+        var brandsDict = db.Brands.ToDictionary(b => b.Name, b => b);
+
         // Seed Product Categories and Products for Each Shop
         if (!db.ProductCategories.Any())
         {
@@ -40,10 +58,12 @@ public static class DataSeeder
             db.ProductCategories.AddRange(riceCat1, spicesCat1);
 
             db.ProductDetails.AddRange(
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Basmati Rice (5kg)", Description = "Premium Basmati Rice", Price = 9.99M, StockQuantity = 100, ProductCategoryId = riceCat1.Id, ProductCategory = riceCat1, ShopId = shop1.Id, Shop = shop1 },
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Brown Rice (5kg)", Description = "Healthy Brown Rice", Price = 8.50M, StockQuantity = 80, ProductCategoryId = riceCat1.Id, ProductCategory = riceCat1, ShopId = shop1.Id, Shop = shop1 },
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Turmeric Powder (200g)", Description = "Pure Turmeric", Price = 2.20M, StockQuantity = 50, ProductCategoryId = spicesCat1.Id, ProductCategory = spicesCat1, ShopId = shop1.Id, Shop = shop1 },
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Chilli Powder (200g)", Description = "Hot Chilli Powder", Price = 2.50M, StockQuantity = 60, ProductCategoryId = spicesCat1.Id, ProductCategory = spicesCat1, ShopId = shop1.Id, Shop = shop1 }
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Basmati Rice (5kg)", Description = "Premium Basmati Rice", Price = 9.99M, StockQuantity = 100, ProductCategoryId = riceCat1.Id, ShopId = shop1.Id, BrandId = brandsDict["Local Brand"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Brown Rice (5kg)", Description = "Healthy Brown Rice", Price = 8.50M, StockQuantity = 80, ProductCategoryId = riceCat1.Id, ShopId = shop1.Id, BrandId = brandsDict["Local Brand"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Organic Quinoa (1kg)", Description = "High-protein organic quinoa", Price = 12.50M, StockQuantity = 70, ProductCategoryId = riceCat1.Id, ShopId = shop1.Id, BrandId = brandsDict["Organic Harvest"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Turmeric Powder (200g)", Description = "Pure Turmeric", Price = 2.20M, StockQuantity = 50, ProductCategoryId = spicesCat1.Id, ShopId = shop1.Id, BrandId = brandsDict["Local Brand"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Chilli Powder (200g)", Description = "Hot Chilli Powder", Price = 2.50M, StockQuantity = 60, ProductCategoryId = spicesCat1.Id, ShopId = shop1.Id, BrandId = brandsDict["Local Brand"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Organic Black Pepper (100g)", Description = "Freshly ground organic black pepper", Price = 4.00M, StockQuantity = 40, ProductCategoryId = spicesCat1.Id, ShopId = shop1.Id, BrandId = brandsDict["Organic Harvest"].Id }
             );
 
             // -------- Wafilife --------
@@ -54,10 +74,12 @@ public static class DataSeeder
             db.ProductCategories.AddRange(booksCat2, stationeryCat2);
 
             db.ProductDetails.AddRange(
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Qur’an with Translation", Description = "Translation and commentary", Price = 5.99M, StockQuantity = 40, ProductCategoryId = booksCat2.Id, ProductCategory = booksCat2, ShopId = shop2.Id, Shop = shop2 },
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Stories of the Prophets", Description = "Stories for children and adults", Price = 6.99M, StockQuantity = 35, ProductCategoryId = booksCat2.Id, ProductCategory = booksCat2, ShopId = shop2.Id, Shop = shop2 },
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Notebook (A5, 100 pages)", Description = "A5 notebook", Price = 1.20M, StockQuantity = 100, ProductCategoryId = stationeryCat2.Id, ProductCategory = stationeryCat2, ShopId = shop2.Id, Shop = shop2 },
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Ball Pen (Blue)", Description = "Blue ink ballpoint", Price = 0.30M, StockQuantity = 300, ProductCategoryId = stationeryCat2.Id, ProductCategory = stationeryCat2, ShopId = shop2.Id, Shop = shop2 }
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Qur’an with Translation", Description = "Translation and commentary", Price = 5.99M, StockQuantity = 40, ProductCategoryId = booksCat2.Id, ShopId = shop2.Id, BrandId = brandsDict["International Books"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Stories of the Prophets", Description = "Stories for children and adults", Price = 6.99M, StockQuantity = 35, ProductCategoryId = booksCat2.Id, ShopId = shop2.Id, BrandId = brandsDict["International Books"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Calligraphy Pen Set", Description = "Set of fine calligraphy pens", Price = 15.00M, StockQuantity = 25, ProductCategoryId = stationeryCat2.Id, ShopId = shop2.Id, BrandId = brandsDict["Artistic Stationery"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Notebook (A5, 100 pages)", Description = "A5 notebook", Price = 1.20M, StockQuantity = 100, ProductCategoryId = stationeryCat2.Id, ShopId = shop2.Id, BrandId = brandsDict["International Books"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Ball Pen (Blue)", Description = "Blue ink ballpoint", Price = 0.30M, StockQuantity = 300, ProductCategoryId = stationeryCat2.Id, ShopId = shop2.Id, BrandId = brandsDict["International Books"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Sketchbook (Hardcover)", Description = "Premium sketchbook for artists", Price = 8.50M, StockQuantity = 50, ProductCategoryId = stationeryCat2.Id, ShopId = shop2.Id, BrandId = brandsDict["Artistic Stationery"].Id }
             );
 
             // -------- Atik Fragnance --------
@@ -68,10 +90,12 @@ public static class DataSeeder
             db.ProductCategories.AddRange(attarCat3, perfumeCat3);
 
             db.ProductDetails.AddRange(
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Oudh Attar (10ml)", Description = "Traditional Oudh attar", Price = 7.99M, StockQuantity = 20, ProductCategoryId = attarCat3.Id, ProductCategory = attarCat3, ShopId = shop3.Id, Shop = shop3 },
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Musk Attar (10ml)", Description = "Classic musk attar", Price = 8.99M, StockQuantity = 15, ProductCategoryId = attarCat3.Id, ProductCategory = attarCat3, ShopId = shop3.Id, Shop = shop3 },
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Oudh Perfume (50ml)", Description = "Long lasting Oudh perfume", Price = 25.00M, StockQuantity = 10, ProductCategoryId = perfumeCat3.Id, ProductCategory = perfumeCat3, ShopId = shop3.Id, Shop = shop3 },
-                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Musk Perfume (50ml)", Description = "Long lasting Musk perfume", Price = 22.00M, StockQuantity = 12, ProductCategoryId = perfumeCat3.Id, ProductCategory = perfumeCat3, ShopId = shop3.Id, Shop = shop3 }
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Oudh Attar (10ml)", Description = "Traditional Oudh attar", Price = 7.99M, StockQuantity = 20, ProductCategoryId = attarCat3.Id, ShopId = shop3.Id, BrandId = brandsDict["Premium Fragrance"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Musk Attar (10ml)", Description = "Classic musk attar", Price = 8.99M, StockQuantity = 15, ProductCategoryId = attarCat3.Id, ShopId = shop3.Id, BrandId = brandsDict["Premium Fragrance"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Sandalwood Attar (10ml)", Description = "Rich sandalwood attar", Price = 9.50M, StockQuantity = 18, ProductCategoryId = attarCat3.Id, ShopId = shop3.Id, BrandId = brandsDict["Exotic Scents"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Oudh Perfume (50ml)", Description = "Long lasting Oudh perfume", Price = 25.00M, StockQuantity = 10, ProductCategoryId = perfumeCat3.Id, ShopId = shop3.Id, BrandId = brandsDict["Premium Fragrance"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Musk Perfume (50ml)", Description = "Long lasting Musk perfume", Price = 22.00M, StockQuantity = 12, ProductCategoryId = perfumeCat3.Id, ShopId = shop3.Id, BrandId = brandsDict["Premium Fragrance"].Id },
+                new ProductDetails { Id = Guid.NewGuid().ToString(), Name = "Amber Perfume (50ml)", Description = "Warm amber perfume", Price = 28.00M, StockQuantity = 8, ProductCategoryId = perfumeCat3.Id, ShopId = shop3.Id, BrandId = brandsDict["Exotic Scents"].Id }
             );
 
             await db.SaveChangesAsync();

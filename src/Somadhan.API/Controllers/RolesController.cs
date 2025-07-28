@@ -15,6 +15,7 @@ namespace Somadhan.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 [ServiceFilter(typeof(InjectShopIdFilter))]
 [Authorize(Roles = SystemRole.ShopManager)]
 public class RolesController : ControllerBase

@@ -1,4 +1,4 @@
-namespace Somadhan.Domain.Core.MultiTenancy
+﻿namespace Somadhan.Domain.Core.MultiTenancy
 {
     public interface IMayHaveTenant
     {

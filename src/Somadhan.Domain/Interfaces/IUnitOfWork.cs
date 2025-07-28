@@ -5,5 +5,7 @@ public interface IUnitOfWork : IDisposable
     IRoleRepository RoleRepository { get; }
     IUserRepository UserRepository { get; }
     IProductCategoryRepository ProductCategoryRepository { get; }
+    IProductDetailsRepository ProductDetailsRepository { get; }
+    IEntityRepository<TEntity> GetRepository<TEntity>() where TEntity : EntityBase;
     Task<int> CommitAsync(CancellationToken cancellationToken = default);
 }

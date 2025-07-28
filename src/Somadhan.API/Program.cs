@@ -1,12 +1,21 @@
 ﻿using CorrelationId;
 using CorrelationId.DependencyInjection;
 
+using MediatR;
+
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 using Serilog;
 
 using Somadhan.API.Extentions;
 using Somadhan.API.Seed;
+using Somadhan.Application.Common;
+using Somadhan.Application.Common.Handlers;
+using Somadhan.Application.Dtos;
+using Somadhan.Domain.Modules.Product;
 using Somadhan.Infrastructure.Data;
 using Somadhan.Infrastructure.Identity;
 
@@ -30,10 +39,20 @@ builder.Services
     .AddMediatorAndValidators()
     .AddJwtAuthentication(builder.Configuration)
     .AddApiServices()
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ReportApiVersions = true;
+    })
+    .AddVersionedApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    })
     .AddSwaggerDocumentation();
 
 builder.Services.AddDefaultCorrelationId();
-
 
 var app = builder.Build();
 
@@ -52,7 +71,12 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    // c.SwaggerEndpoint("/swagger/v1/swagger.json", "Somadhan API"); // This label appears in the dropdown
+    // c.DocumentTitle = "Somadhan API Docs"; // Optional - browser tab title
+    // c.RoutePrefix = ""; // Optional - Swagger UI at root (localhost:5000/)
+});
 app.UseAppMiddlewares();
 app.MapControllers();
 
