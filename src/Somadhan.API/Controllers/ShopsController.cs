@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Somadhan.API.Models;
 using Somadhan.Application.Commands.Shops;
+using Somadhan.Application.Dtos;
 using Somadhan.Application.Queries;
 
 using Swashbuckle.AspNetCore.Annotations;
@@ -14,14 +15,14 @@ namespace Somadhan.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class ShopsController : ControllerBase
+public class ShopsController : BaseController<Shop, ShopDto>
 {
-    private readonly ILogger<ShopsController> _logger;
-    private readonly IMediator _mediator;
-    public ShopsController(ILogger<ShopsController> logger, IMediator mediator)
+    //private readonly ILogger<ShopsController> _logger;
+    //private readonly IMediator _mediator;
+    public ShopsController(ILogger<ShopsController> logger, IMediator mediator) : base(logger, mediator)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        //_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        //_mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
     }
 
     [HttpGet("{shopId}")]

@@ -24,19 +24,25 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, (IEnumerable<
     }
     public async Task<(IEnumerable<UserDto>, int)> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
-        Expression<Func<User, bool>>? predicate = u => true;
+        Expression<Func<User, bool>> predicate = u => true;
 
+        // SearchText filter
         if (!string.IsNullOrEmpty(request.SearchText))
         {
-            predicate = user => user.UserName.Contains(request.SearchText) || user.Email.Contains(request.SearchText);
+            var searchText = request.SearchText.ToLower();
+            predicate = predicate.AndAlso(user =>
+                user.UserName.ToLower().Contains(searchText) ||
+                user.Email.ToLower().Contains(searchText));
         }
 
+        // ShopId filter
         if (!string.IsNullOrEmpty(request.ShopId))
         {
-            predicate = user => user.ShopId == request.ShopId;
+            predicate = predicate.AndAlso(user => user.ShopId == request.ShopId);
         }
 
-        var response = await _unitOfWork.UserRepository.FindAsync(predicate, request.PageNumber, request.PageSize, cancellationToken: cancellationToken);
+        var response = await _unitOfWork.UserRepository.FindAsync(
+            predicate, request.PageNumber, request.PageSize, cancellationToken: cancellationToken);
 
         var userDtos = response.Item1.Select(user => new UserDto
         {
@@ -47,5 +53,19 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, (IEnumerable<
         }).ToList();
 
         return (userDtos, response.Item2);
+    }
+}
+
+public static class PredicateBuilder
+{
+    public static Expression<Func<T, bool>> AndAlso<T>(
+        this Expression<Func<T, bool>> expr1,
+        Expression<Func<T, bool>> expr2)
+    {
+        var parameter = Expression.Parameter(typeof(T));
+        var combined = Expression.AndAlso(
+            Expression.Invoke(expr1, parameter),
+            Expression.Invoke(expr2, parameter));
+        return Expression.Lambda<Func<T, bool>>(combined, parameter);
     }
 }
