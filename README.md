@@ -1,19 +1,21 @@
-# Shomadhan
+# Somadhan
 
-Shomadhan is a multi-tenant application built with .NET 9, following a clean architecture that separates concerns into four main projects: Domain, Application, Infrastructure, and a web API. This structure ensures a modular, scalable, and maintainable codebase, making it an ideal starting point for more complex systems.
+Somadhan is a multi-tenant application built with .NET 9, following a clean architecture that separates concerns into four main projects: Domain, Application, Infrastructure, and a web API. This structure ensures a modular, scalable, and maintainable codebase, making it an ideal starting point for more complex systems.
 
 ## Table of Contents
 
-- [Features](#features)
-- [Technologies](#technologies)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Running the Application](#running-the-application)
-- [Testing](#testing)
-- [API Documentation](#api-documentation)
-- [Contributing](#contributing)
-- [License](#license)
+- [Somadhan](#somadhan)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Technologies](#technologies)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+  - [Running the Application](#running-the-application)
+  - [Testing](#testing)
+  - [API Documentation](#api-documentation)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Features
 
@@ -47,8 +49,8 @@ Follow these instructions to get the project up and running on your local machin
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/Shomadhan.git
-   cd Shomadhan
+   git clone https://github.com/your-username/Somadhan.git
+   cd Somadhan
    ```
 
 2. **Restore dependencies:**
@@ -62,12 +64,12 @@ To run the application, you can either use the .NET CLI or Visual Studio.
 
 - **Using the .NET CLI:**
   ```bash
-  dotnet run --project src/Shomadhan.API/Shomadhan.API.csproj
+  dotnet run --project src/Somadhan.API/Somadhan.API.csproj
   ```
 
 - **Using Visual Studio:**
-  1. Open `Shomadhan.sln` in Visual Studio.
-  2. Set `Shomadhan.API` as the startup project.
+  1. Open `Somadhan.sln` in Visual Studio.
+  2. Set `Somadhan.API` as the startup project.
   3. Press `F5` to run the application.
 
 The API will be available at `http://localhost:5000` (or another port specified in the launch settings).
