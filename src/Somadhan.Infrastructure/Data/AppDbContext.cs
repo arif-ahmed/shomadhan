@@ -18,6 +18,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<User> ApplicationUsers { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
     public DbSet<ProductDetails> ProductDetails { get; set; }
+    public DbSet<Brand> Brands { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -25,6 +26,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
         
         // Additional model configurations can be added here
         modelBuilder.Entity<Shop>().ToTable("Shops");
+        modelBuilder.Entity<ProductDetails>().ToTable("ProductDetails");
+        modelBuilder.Entity<Brand>().ToTable("Brands");
     }
 }
 

@@ -23,6 +23,7 @@ public class UnitOfWork : IUnitOfWork, IDisposable
     public IRoleRepository RoleRepository => GetRepository<IRoleRepository, IdentityRoleRepository>();
     public IUserRepository UserRepository => GetRepository<IUserRepository, IdentityUserRepository>();
     public IProductCategoryRepository ProductCategoryRepository => GetRepository<IProductCategoryRepository, ProductCategoryRepository>();
+    public IProductDetailsRepository ProductDetailsRepository => GetRepository<IProductDetailsRepository, ProductDetailsRepository>();
 
 
     public int Commit() => _context.SaveChanges();

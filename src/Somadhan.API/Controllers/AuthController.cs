@@ -17,6 +17,7 @@ namespace Somadhan.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
 public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
