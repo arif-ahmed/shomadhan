@@ -3,26 +3,26 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy solution and project files
-COPY ["Shomadhan.sln", "."]
-COPY ["src/Shomadhan.API/Shomadhan.API.csproj", "src/Shomadhan.API/"]
-COPY ["src/Shomadhan.Application/Shomadhan.Application.csproj", "src/Shomadhan.Application/"]
-COPY ["src/Shomadhan.Domain/Shomadhan.Domain.csproj", "src/Shomadhan.Domain/"]
-COPY ["src/Shomadhan.Infrastructure/Shomadhan.Infrastructure.csproj", "src/Shomadhan.Infrastructure/"]
-COPY ["tests/Shomadhan.API.Tests/Shomadhan.API.Tests.csproj", "tests/Shomadhan.API.Tests/"]
-COPY ["tests/Shomadhan.Application.Tests/Shomadhan.Application.Tests.csproj", "tests/Shomadhan.Application.Tests/"]
-COPY ["tests/Shomadhan.Domain.Tests/Shomadhan.Domain.Tests.csproj", "tests/Shomadhan.Domain.Tests/"]
-COPY ["tests/Shomadhan.Infrastructure.Tests/Shomadhan.Infrastructure.Tests.csproj", "tests/Shomadhan.Infrastructure.Tests/"]
+COPY ["Somadhan.sln", "."]
+COPY ["src/Somadhan.API/Somadhan.API.csproj", "src/Somadhan.API/"]
+COPY ["src/Somadhan.Application/Somadhan.Application.csproj", "src/Somadhan.Application/"]
+COPY ["src/Somadhan.Domain/Somadhan.Domain.csproj", "src/Somadhan.Domain/"]
+COPY ["src/Somadhan.Infrastructure/Somadhan.Infrastructure.csproj", "src/Somadhan.Infrastructure/"]
+COPY ["tests/Somadhan.API.Tests/Somadhan.API.Tests.csproj", "tests/Somadhan.API.Tests/"]
+COPY ["tests/Somadhan.Application.Tests/Somadhan.Application.Tests.csproj", "tests/Somadhan.Application.Tests/"]
+COPY ["tests/Somadhan.Domain.Tests/Somadhan.Domain.Tests.csproj", "tests/Somadhan.Domain.Tests/"]
+COPY ["tests/Somadhan.Infrastructure.Tests/Somadhan.Infrastructure.Tests.csproj", "tests/Somadhan.Infrastructure.Tests/"]
 
 
 # Restore dependencies
-RUN dotnet restore "Shomadhan.sln"
+RUN dotnet restore "Somadhan.sln"
 
 # Copy the rest of the source code
 COPY . .
 
 # Publish the API
-WORKDIR "/src/src/Shomadhan.API"
-RUN dotnet publish "Shomadhan.API.csproj" -c Release -o /app/publish
+WORKDIR "/src/src/Somadhan.API"
+RUN dotnet publish "Somadhan.API.csproj" -c Release -o /app/publish
 
 # Runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
@@ -30,4 +30,4 @@ WORKDIR /app
 COPY --from=build /app/publish .
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
-ENTRYPOINT ["dotnet", "Shomadhan.API.dll"]
+ENTRYPOINT ["dotnet", "Somadhan.API.dll"]
