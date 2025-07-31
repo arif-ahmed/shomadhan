@@ -2,22 +2,17 @@
 using CorrelationId.DependencyInjection;
 
 using MediatR;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
-
+using MongoDB.Driver;
 using Serilog;
-
+using Somadhan.API.Configuration;
 using Somadhan.API.Extentions;
 using Somadhan.API.Seed;
-using Somadhan.Application.Common;
-using Somadhan.Application.Common.Handlers;
-using Somadhan.Application.Dtos;
-using Somadhan.Domain.Modules.Product;
-using Somadhan.Infrastructure.Data;
-using Somadhan.Infrastructure.Identity;
+using Somadhan.Domain.Interfaces;
+using Somadhan.Persistence.EF;
+using Somadhan.Persistence.EF.Data;
+using Somadhan.Persistence.Mongo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +47,22 @@ builder.Services
     })
     .AddSwaggerDocumentation();
 
+// Bind MongoDbSettings
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDb"));
+var mongoSettings = builder.Configuration.GetSection("MongoDb").Get<MongoDbSettings>();
+
+// Register MongoDB types
+builder.Services.AddSingleton<IMongoClient>(sp =>
+    new MongoClient(mongoSettings?.ConnectionString));
+
+builder.Services.AddSingleton<IMongoDatabase>(sp =>
+    sp.GetRequiredService<IMongoClient>().GetDatabase(mongoSettings?.Database));
+
+// Register generic and specific repositories
+// builder.Services.AddScoped(typeof(IEntityRepository<>), typeof(MongoRepository<>));
+builder.Services.AddScoped<IShopRepository, MongoShopRepository>();
+builder.Services.AddScoped<MongoShopRepository>();
+
 builder.Services.AddDefaultCorrelationId();
 
 var app = builder.Build();
@@ -65,6 +76,14 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     await DataSeeder.SeedAsync(db, userManager, roleManager);
 }
+
+// Seed MongoDB
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<IMongoDatabase>();
+    await MongoDbSeeder.SeedAsync(db);
+}
+
 
 // --- Middleware pipeline ---
 app.UseHttpsRedirection();

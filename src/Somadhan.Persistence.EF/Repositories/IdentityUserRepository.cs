@@ -1,16 +1,16 @@
 ﻿using System.Linq.Expressions;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
 using Somadhan.Domain.Core.Identity;
 using Somadhan.Domain.Interfaces;
-using Somadhan.Infrastructure.Common;
-using Somadhan.Infrastructure.Data;
-using Somadhan.Infrastructure.Identity;
+using Somadhan.Persistence.EF;
+using Somadhan.Persistence.EF.Common;
+using Somadhan.Persistence.EF.Data;
+using Somadhan.Persistence.EF.Repositories;
+
 
 namespace Somadhan.Infrastructure.Repositories;
-public class IdentityUserRepository : EntityRepository<User>, IUserRepository
+public class IdentityUserRepository : EfRepository<User>, IUserRepository
 {
     private readonly UserManager<ApplicationUser> _userManager;
     public IdentityUserRepository(AppDbContext context, UserManager<ApplicationUser> userManager) : base(context)

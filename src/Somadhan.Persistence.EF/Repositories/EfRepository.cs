@@ -1,17 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Expressions;
+
+using Microsoft.EntityFrameworkCore;
+
 using Somadhan.Domain;
 using Somadhan.Domain.Interfaces;
-using Somadhan.Infrastructure.Data;
+using Somadhan.Persistence.EF.Data;
 
-using System.Linq.Expressions;
+namespace Somadhan.Persistence.EF.Repositories;
 
-namespace Somadhan.Infrastructure.Repositories;
-public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntity : EntityBase
+public class EfRepository<TEntity> : IEntityRepository<TEntity> where TEntity : EntityBase
 {
     private readonly AppDbContext _context;
     private readonly DbSet<TEntity> _dbSet;
 
-    public EntityRepository(AppDbContext context)
+    public EfRepository(AppDbContext context)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _dbSet = _context.Set<TEntity>() ?? throw new ArgumentNullException(nameof(_dbSet));
@@ -104,7 +106,7 @@ public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntit
             throw new ArgumentOutOfRangeException(nameof(id), "Id must be greater than zero.");
         }
 
-        return await _dbSet.AnyAsync(e => EF.Property<int>(e, "Id") == id, cancellationToken);
+        return await _dbSet.AnyAsync(e => Microsoft.EntityFrameworkCore.EF.Property<int>(e, "Id") == id, cancellationToken);
     }
     public virtual async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, string sortBy, string sortOrder, int offset = 0, int pageSize = 100, CancellationToken cancellationToken = default)
     {
@@ -128,11 +130,11 @@ public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntit
         var query = _dbSet.Where(predicate);
         if (sortOrder.Equals("asc", StringComparison.OrdinalIgnoreCase))
         {
-            query = query.OrderBy(e => EF.Property<object>(e, sortBy));
+            query = query.OrderBy(e => Microsoft.EntityFrameworkCore.EF.Property<object>(e, sortBy));
         }
         else if (sortOrder.Equals("desc", StringComparison.OrdinalIgnoreCase))
         {
-            query = query.OrderByDescending(e => EF.Property<object>(e, sortBy));
+            query = query.OrderByDescending(e => Microsoft.EntityFrameworkCore.EF.Property<object>(e, sortBy));
         }
         else
         {
@@ -180,7 +182,6 @@ public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntit
 
         return (await query.ToListAsync(cancellationToken), totalCount);
     }
-
     public async Task<(IEnumerable<TEntity>, int)> GetAsync(Func<IQueryable<TEntity>, IQueryable<TEntity>>? query = null, CancellationToken cancellationToken = default)
     {
         var queryable = _dbSet.AsQueryable();
@@ -195,4 +196,5 @@ public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntit
 
         return (entities, count);
     }
+
 }

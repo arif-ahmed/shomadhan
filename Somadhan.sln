@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Somadhan.Infrastructure.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Somadhan.API.Tests", "tests\Somadhan.API.Tests\Somadhan.API.Tests.csproj", "{BFF26BB7-FC77-7EA6-D2D7-B912290929A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Somadhan.Persistence.Mongo", "src\Somadhan.Persistence.Mongo\Somadhan.Persistence.Mongo.csproj", "{D294B179-81B3-8FFD-0B1F-F77A0CCB99EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Somadhan.Persistence.EF", "src\Somadhan.Persistence.EF\Somadhan.Persistence.EF.csproj", "{CC05F503-7E3B-A9F1-AA91-1D32151DEA2A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +65,14 @@ Global
 		{BFF26BB7-FC77-7EA6-D2D7-B912290929A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFF26BB7-FC77-7EA6-D2D7-B912290929A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFF26BB7-FC77-7EA6-D2D7-B912290929A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D294B179-81B3-8FFD-0B1F-F77A0CCB99EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D294B179-81B3-8FFD-0B1F-F77A0CCB99EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D294B179-81B3-8FFD-0B1F-F77A0CCB99EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D294B179-81B3-8FFD-0B1F-F77A0CCB99EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC05F503-7E3B-A9F1-AA91-1D32151DEA2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC05F503-7E3B-A9F1-AA91-1D32151DEA2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC05F503-7E3B-A9F1-AA91-1D32151DEA2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC05F503-7E3B-A9F1-AA91-1D32151DEA2A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +86,8 @@ Global
 		{20520268-2EF6-7132-E4C3-403BB465212B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{4889EAE5-7D4B-BFBE-1A88-5086C9094A5D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{BFF26BB7-FC77-7EA6-D2D7-B912290929A4} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{D294B179-81B3-8FFD-0B1F-F77A0CCB99EC} = {D330BCB7-D382-4250-8F69-2D06CE5F44DE}
+		{CC05F503-7E3B-A9F1-AA91-1D32151DEA2A} = {D330BCB7-D382-4250-8F69-2D06CE5F44DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {15FEE4DB-E473-453B-BEDB-12C0D38419AF}

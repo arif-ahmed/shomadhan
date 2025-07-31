@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+
 using Somadhan.Domain;
 using Somadhan.Domain.Interfaces;
-using Somadhan.Infrastructure.Data;
 using Somadhan.Infrastructure.Repositories;
+using Somadhan.Persistence.EF.Data;
 
-namespace Somadhan.Infrastructure;
+namespace Somadhan.Persistence.EF;
 public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private readonly AppDbContext _context;
@@ -75,5 +76,3 @@ public class UnitOfWork : IUnitOfWork, IDisposable
         return repository;
     }
 }
-
-

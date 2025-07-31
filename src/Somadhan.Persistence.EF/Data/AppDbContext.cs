@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
 using Somadhan.Domain.Core.Identity;
 using Somadhan.Domain.Modules.Product;
-using Somadhan.Infrastructure.Identity;
+using Somadhan.Persistence.EF.Data.EntityConfigurations.Views;
 
-namespace Somadhan.Infrastructure.Data;
+namespace Somadhan.Persistence.EF.Data;
 
 public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
@@ -13,6 +14,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
     }
 
+    // Define DbSets for your entities here
     public DbSet<Shop> Shops { get; set; }
     public DbSet<Role> ApplicationRoles { get; set; }
     public DbSet<User> ApplicationUsers { get; set; }
@@ -23,11 +25,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
-        // Additional model configurations can be added here
+
         modelBuilder.Entity<Shop>().ToTable("Shops");
         modelBuilder.Entity<ProductDetails>().ToTable("ProductDetails");
         modelBuilder.Entity<Brand>().ToTable("Brands");
+
+        modelBuilder.ApplyConfiguration(new EmployeeAverageSalaryConfiguration());
     }
 }
-

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 using Somadhan.API.Models;
-using Somadhan.Infrastructure.Identity;
+using Somadhan.Persistence.EF;
 
 using Swashbuckle.AspNetCore.Annotations;
 

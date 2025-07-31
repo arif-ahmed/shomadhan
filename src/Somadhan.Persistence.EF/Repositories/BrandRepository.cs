@@ -1,9 +1,10 @@
 using Somadhan.Domain.Interfaces;
 using Somadhan.Domain.Modules.Product;
-using Somadhan.Infrastructure.Data;
+using Somadhan.Persistence.EF.Data;
+using Somadhan.Persistence.EF.Repositories;
 
 namespace Somadhan.Infrastructure.Repositories;
-public class BrandRepository : EntityRepository<Brand>, IBrandRepository
+public class BrandRepository : EfRepository<Brand>, IBrandRepository
 {
     public BrandRepository(AppDbContext context) : base(context)
     {

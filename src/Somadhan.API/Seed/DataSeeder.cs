@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
-
 using Somadhan.Domain.Modules.Product;
-using Somadhan.Infrastructure.Data;
-using Somadhan.Infrastructure.Identity;
+using Somadhan.Persistence.EF;
+using Somadhan.Persistence.EF.Data;
 
 namespace Somadhan.API.Seed;
 public static class DataSeeder

@@ -1,8 +1,7 @@
-﻿
-using Somadhan.Domain.Core.Identity;
-using Somadhan.Infrastructure.Identity;
+﻿using Somadhan.Domain.Core.Identity;
 
-namespace Somadhan.Infrastructure.Common;
+namespace Somadhan.Persistence.EF.Common;
+
 public static class UserMappingExtensions
 {
     public static User ToDomainUser(this ApplicationUser appUser)

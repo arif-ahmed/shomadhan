@@ -1,15 +1,14 @@
 ﻿using System.Linq.Expressions;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
 using Somadhan.Domain.Core.Identity;
 using Somadhan.Domain.Interfaces;
-using Somadhan.Infrastructure.Common;
-using Somadhan.Infrastructure.Data;
+using Somadhan.Persistence.EF.Common;
+using Somadhan.Persistence.EF.Data;
+using Somadhan.Persistence.EF.Repositories;
 
 namespace Somadhan.Infrastructure.Repositories;
-public class IdentityRoleRepository : EntityRepository<Role>, IRoleRepository
+public class IdentityRoleRepository : EfRepository<Role>, IRoleRepository
 {
     private readonly RoleManager<IdentityRole> _roleManager;
     public IdentityRoleRepository(AppDbContext context, RoleManager<IdentityRole> roleManager) : base(context)

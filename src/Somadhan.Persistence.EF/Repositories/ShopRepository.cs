@@ -1,8 +1,9 @@
 ﻿using Somadhan.Domain.Interfaces;
-using Somadhan.Infrastructure.Data;
+using Somadhan.Persistence.EF.Data;
+using Somadhan.Persistence.EF.Repositories;
 
 namespace Somadhan.Infrastructure.Repositories;
-public class ShopRepository : EntityRepository<Shop>, IShopRepository
+public class ShopRepository : EfRepository<Shop>, IShopRepository
 {
     public ShopRepository(AppDbContext context) : base(context)
     {

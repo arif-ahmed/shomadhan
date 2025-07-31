@@ -1,5 +1,5 @@
-# Use .NET 8.0 SDK image for build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# Use .NET 9.0 SDK image for build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy solution and project files
@@ -13,7 +13,6 @@ COPY ["tests/Somadhan.Application.Tests/Somadhan.Application.Tests.csproj", "tes
 COPY ["tests/Somadhan.Domain.Tests/Somadhan.Domain.Tests.csproj", "tests/Somadhan.Domain.Tests/"]
 COPY ["tests/Somadhan.Infrastructure.Tests/Somadhan.Infrastructure.Tests.csproj", "tests/Somadhan.Infrastructure.Tests/"]
 
-
 # Restore dependencies
 RUN dotnet restore "Somadhan.sln"
 
@@ -24,8 +23,8 @@ COPY . .
 WORKDIR "/src/src/Somadhan.API"
 RUN dotnet publish "Somadhan.API.csproj" -c Release -o /app/publish
 
-# Runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+# Runtime image using .NET 9.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 EXPOSE 8080
